@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { SurfClient } from '@surf_liquid/core-sdk';
 import { SurfWidget } from '@surf_liquid/surf-widget';
-import '../../src/styles/widget.css';
+import '@surf_liquid/surf-widget/dist/index.css';
 
 // ─── Config ───────────────────────────────────────────────────────────────────
 

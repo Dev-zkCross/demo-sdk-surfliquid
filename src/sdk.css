@@ -1,0 +1,59 @@
+/* Use the demo-local SDK tailwind config so sw- prefixed classes are generated */
+@config '../tailwind.sdk.config.js';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* SDK CSS custom property defaults (from src/styles/index.css, without the @tailwind directives) */
+[data-surf-widget] {
+  --surf-primary: #3b82f6;
+  --surf-primary-text: #ffffff;
+  --surf-background: #eff6ff;
+  --surf-card-background: #ffffff;
+  --surf-text: #111827;
+  --surf-text-secondary: #6b7280;
+  --surf-apy: #3b82f6;
+  --surf-border: #e5e7eb;
+  --surf-success: #10b981;
+  --surf-border-radius: 12px;
+  --surf-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  box-sizing: border-box;
+}
+
+[data-surf-widget] *,
+[data-surf-widget] *::before,
+[data-surf-widget] *::after {
+  box-sizing: inherit;
+}
+
+[data-surf-widget] button {
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+[data-surf-widget] input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+[data-surf-widget] input[type="number"]::-webkit-outer-spin-button,
+[data-surf-widget] input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+@keyframes surf-spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes surf-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+[data-surf-widget] .sw-animate-spin {
+  animation: surf-spin 0.75s linear infinite;
+}
+[data-surf-widget] .sw-animate-pulse {
+  animation: surf-pulse 1.5s ease-in-out infinite;
+}

@@ -1,6 +1,6 @@
 ---
 name: surf-widget-integration
-description: Integrate the @surf_liquid/surf-widget React component into a web app — drop in the SurfWidget, configure theming, wire deposit/withdraw modals, read vault state via hooks, and handle agent activity. Use this skill whenever a task involves @surf_liquid/surf-widget: SurfWidget props, SurfProvider setup, SurfTheme customization, DepositModal/WithdrawModal/VaultCard sub-components, hooks (useDeposit, useWithdraw, useVault, useAgentMessages), or debugging the widget's interaction with @surf_liquid/core-sdk.
+description: Integrate the @surf_liquid/surf-widget React component into a web app — drop in the SurfWidget, configure theming, wire deposit/withdraw modals, read vault state via hooks, and handle agent activity. Use this skill whenever a task involves @surf_liquid/surf-widget: SurfWidget props, SurfProvider setup, SurfTheme customization, DepositModal/WithdrawModal/VaultCard sub-components, hooks (useDeposit, useWithdraw, useVault, useAgentMessages), or debugging the widget's interaction with @surf_liquid/core-sdk. Supported chains: Ethereum (1), Base (8453), Polygon (137), Base Sepolia (84532).
 ---
 
 # SurfLiquid Widget Integration Skill
@@ -84,7 +84,7 @@ import { SurfWidget } from '@surf_liquid/surf-widget';
 import '@surf_liquid/surf-widget/dist/index.css';
 
 const APP_ID = import.meta.env.VITE_APP_ID;
-const CHAIN_ID = 8453; // Base
+const CHAIN_ID = 8453; // 1 = Ethereum, 8453 = Base, 137 = Polygon, 84532 = Base Sepolia
 
 export function App() {
   const [address, setAddress] = useState<string | null>(null);
@@ -130,7 +130,7 @@ export function App() {
 interface SurfWidgetProps {
   client: ISurfClient;       // required — a connected + authenticated SurfClient
   walletAddress: string;     // required — the connected wallet's EOA address
-  chainId?: number;          // optional — 8453 (Base, default), 137 (Polygon), 84532 (Base Sepolia)
+  chainId?: number;          // optional — 8453 (Base, default), 1 (Ethereum), 137 (Polygon), 84532 (Base Sepolia)
   theme?: SurfTheme;         // optional — visual customization (see below)
   className?: string;        // optional — extra CSS class on the widget root element
   minDeposit?: number;       // optional — minimum deposit amount, defaults to 0.1
@@ -158,7 +158,7 @@ interface ISurfClient {
 }
 ```
 
-**`chainId`** — controls which chain's assets and vault the widget shows. Defaults to `8453` (Base). Pass `137` for Polygon, `84532` for Base Sepolia. Must match the chain you passed to `SurfClient.create(...)`.
+**`chainId`** — controls which chain's assets and vault the widget shows. Defaults to `8453` (Base). Pass `1` for Ethereum mainnet, `137` for Polygon, `84532` for Base Sepolia. Must match the chain you passed to `SurfClient.create(...)`.
 
 **`onSuccess` / `onError`** — callbacks fired after a deposit or withdraw completes or errors. These fire after the transaction receipt is confirmed (for success) or after the error is thrown. Use these to update parent UI state (e.g. show a toast, refresh a balance display).
 
@@ -230,7 +230,7 @@ function App() {
   const config = {
     client: surfClient,      // authenticated SurfClient
     walletAddress: address,
-    chainId: 8453,
+    chainId: 8453,            // 1 = Ethereum, 8453 = Base, 137 = Polygon, 84532 = Base Sepolia
     theme: { colors: { primary: '#6366f1' } },
     minDeposit: 0.1,         // optional, defaults to 0.1
     onSuccess: (action, txHash) => console.log(action, txHash),
@@ -632,7 +632,7 @@ If the widget renders but looks completely unstyled (plain HTML), this import is
 The widget calls `client.getVault()` on mount. That call goes to the REST API, which requires the session cookie. If you render `<SurfWidget>` without calling `client.authenticate()` first, the vault fetch returns 401 and the widget shows an empty/error state.
 
 **2. `chainId` prop must match the client's configured chain.**
-The widget uses `chainId` to call `client.getSupportedAssets(chainId)` and resolve vault data. If `chainId` differs from what you passed to `SurfClient.create({ chainId: ... })`, asset resolution will fail. Keep them in sync.
+The widget uses `chainId` to call `client.getSupportedAssets(chainId)` and resolve vault data. If `chainId` differs from what you passed to `SurfClient.create({ chainId: ... })`, asset resolution will fail. Keep them in sync. Supported values: `1` (Ethereum), `8453` (Base), `137` (Polygon), `84532` (Base Sepolia).
 
 **3. `client` prop should not be recreated on every render.**
 `SurfClient.create(...)` is synchronous but heavy. If you call it inside a React render function without memoization, the widget will re-mount and re-fetch on every render. Compute the client once (in a `useState` initializer, `useMemo`, or module scope) and hold a stable reference.

@@ -6,7 +6,9 @@ import "@surf_liquid/surf-widget/dist/index.css";
 // ─── Config ───────────────────────────────────────────────────────────────────
 
 const APP_ID = import.meta.env.VITE_APP_ID;
-const CHAIN_ID = 1; // 8453 = Base, 137 = Polygon, 1=Ethereum
+const Ethereum_CHAIN_ID = 1; // 8453 = Base, 137 = Polygon, 1=Ethereum
+const BASE_CHAIN_ID = 8453; // 8453 = Base, 137 = Polygon, 1=Ethereum
+const POLYGON_CHAIN_ID = 137;
 
 // ─── App ──────────────────────────────────────────────────────────────────────
 
@@ -88,7 +90,17 @@ export function App() {
       <SurfWidget
         client={surfClient}
         walletAddress={address}
-        chainId={CHAIN_ID}
+        chainId={Ethereum_CHAIN_ID}
+      />
+      <SurfWidget
+        client={surfClient}
+        walletAddress={address}
+        chainId={BASE_CHAIN_ID}
+      />
+      <SurfWidget
+        client={surfClient}
+        walletAddress={address}
+        chainId={POLYGON_CHAIN_ID}
       />
     </div>
   );

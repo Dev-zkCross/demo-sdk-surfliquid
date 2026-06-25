@@ -3,7 +3,7 @@ import { SurfClient } from "@surf_liquid/core-sdk";
 import { SurfWidget } from "@surf_liquid/surf-widget";
 import "@surf_liquid/surf-widget/dist/index.css";
 
-const APP_ID = "046ee355-77d0-4ef8-a5da-d50f9a28bd14";
+const APP_ID = ""; //Your APPID
 
 const CHAINS = [
   { chainId: 1, label: "Ethereum" },

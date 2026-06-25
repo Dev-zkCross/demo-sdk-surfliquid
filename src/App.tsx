@@ -3,19 +3,19 @@ import { SurfClient } from "@surf_liquid/core-sdk";
 import { SurfWidget } from "@surf_liquid/surf-widget";
 import "@surf_liquid/surf-widget/dist/index.css";
 
-// ─── Config ───────────────────────────────────────────────────────────────────
+const APP_ID = "046ee355-77d0-4ef8-a5da-d50f9a28bd14";
 
-const APP_ID = import.meta.env.VITE_APP_ID;
-const Ethereum_CHAIN_ID = 1; // 8453 = Base, 137 = Polygon, 1=Ethereum
-const BASE_CHAIN_ID = 8453; // 8453 = Base, 137 = Polygon, 1=Ethereum
-const POLYGON_CHAIN_ID = 137;
+const CHAINS = [
+  { chainId: 1, label: "Ethereum" },
+  { chainId: 8453, label: "Base" },
+  { chainId: 137, label: "Polygon" },
+];
 
-// ─── App ──────────────────────────────────────────────────────────────────────
+type ClientMap = Record<number, ReturnType<typeof SurfClient.create>>;
 
 export function App() {
   const [address, setAddress] = useState<string | null>(null);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [surfClient, setSurfClient] = useState<any>(null);
+  const [clients, setClients] = useState<ClientMap>({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -23,14 +23,34 @@ export function App() {
     setLoading(true);
     setError("");
     try {
-      const client = SurfClient.create({
+      const newClients: ClientMap = {};
+
+      // Step 1 — connect + authenticate once (single SIWE signature)
+      const [first, ...rest] = CHAINS;
+      const firstClient = SurfClient.create({
         projectName: "surf-demo",
         appId: APP_ID,
-        chainId: 1,
+        chainId: first.chainId,
       });
-      const state = await client.connectWallet("metamask");
-      await client.authenticate();
-      setSurfClient(client);
+      await (firstClient as any).verifyApp?.(); // §2 — validate appId (v0.4.0+)
+      const state = await firstClient.connectWallet("metamask");
+      const auth = await firstClient.authenticate();
+      if (!auth.authenticated) throw new Error("Authentication failed"); // §1
+      newClients[first.chainId] = firstClient;
+
+      // Step 2 — wire up remaining chains; MetaMask is already connected so
+      // connectWallet returns immediately. Session cookie covers auth for all chains.
+      for (const { chainId } of rest) {
+        const client = SurfClient.create({
+          projectName: "surf-demo",
+          appId: APP_ID,
+          chainId,
+        });
+        await client.connectWallet("metamask");
+        newClients[chainId] = client;
+      }
+
+      setClients(newClients);
       setAddress(state.address);
     } catch (err) {
       setError(String(err));
@@ -39,7 +59,7 @@ export function App() {
     }
   }
 
-  if (!address || !surfClient) {
+  if (!address || Object.keys(clients).length === 0) {
     return (
       <div
         style={{
@@ -80,6 +100,7 @@ export function App() {
     <div
       style={{
         display: "flex",
+        flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
         minHeight: "100vh",
@@ -87,21 +108,15 @@ export function App() {
         fontFamily: "Inter, system-ui, sans-serif",
       }}
     >
-      <SurfWidget
-        client={surfClient}
-        walletAddress={address}
-        chainId={Ethereum_CHAIN_ID}
-      />
-      <SurfWidget
-        client={surfClient}
-        walletAddress={address}
-        chainId={BASE_CHAIN_ID}
-      />
-      <SurfWidget
-        client={surfClient}
-        walletAddress={address}
-        chainId={POLYGON_CHAIN_ID}
-      />
+      {CHAINS.map(({ chainId }) => (
+        <SurfWidget
+          key={chainId}
+          appId={APP_ID}
+          client={clients[chainId]}
+          walletAddress={address}
+          chainId={chainId}
+        />
+      ))}
     </div>
   );
 }

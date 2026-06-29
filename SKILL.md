@@ -1,6 +1,6 @@
 ---
 name: surf-widget-integration
-description: Integrate the @surf_liquid/surf-widget React component into a web app — drop in the SurfWidget, configure theming, wire deposit/withdraw modals, read vault state via hooks, and handle agent activity. Use this skill whenever a task involves @surf_liquid/surf-widget: SurfWidget props, SurfProvider setup, SurfTheme customization, DepositModal/WithdrawModal/VaultCard sub-components, hooks (useDeposit, useWithdraw, useVault, useAgentMessages), or debugging the widget's interaction with @surf_liquid/core-sdk. Supported chains: Ethereum (1), Base (8453), Polygon (137), Base Sepolia (84532).
+description: "Integrate the @surf_liquid/surf-widget React component into a web app — drop in the SurfWidget, configure theming, wire deposit/withdraw modals, read vault state via hooks, and handle agent activity. Use this skill whenever a task involves @surf_liquid/surf-widget: SurfWidget props, SurfProvider setup, SurfTheme customization, DepositModal/WithdrawModal/VaultCard sub-components, hooks (useDeposit, useWithdraw, useVault, useAgentMessages), or debugging the widget's interaction with @surf_liquid/core-sdk. Supported chains: Ethereum (1), Base (8453), Polygon (137), Base Sepolia (84532)."
 ---
 
 # SurfLiquid Widget Integration Skill
